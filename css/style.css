@@ -1,0 +1,133 @@
+/* RESET */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+
+/* ESTILO GLOBAL */
+
+body{
+
+    font-family:"Segoe UI", Arial, sans-serif;
+    background:#f5f7fa;
+    color:#333;
+    line-height:1.6;
+
+}
+
+
+/* CONTAINER */
+
+.container{
+
+    width:90%;
+    max-width:1100px;
+    margin:auto;
+    text-align:center;
+
+}
+
+
+/* HEADER */
+
+.header{
+
+    background:linear-gradient(90deg,#0d47a1,#1e88e5);
+    color:white;
+    padding:40px 0;
+
+}
+
+.title{
+
+    font-size:2.3rem;
+    margin-bottom:10px;
+
+}
+
+.subtitle{
+
+    font-size:1.2rem;
+    opacity:0.9;
+
+}
+
+
+
+.hero{
+
+    padding:60px 0;
+    background:white;
+
+}
+
+.hero-image {
+
+    display: block;
+
+    width: 100%;
+    max-width: 450px;
+
+    margin: 25px auto;
+
+    border-radius: 10px;
+
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+
+}
+
+figcaption{
+
+    margin-top:10px;
+    font-size:0.9rem;
+    color:#666;
+
+}
+
+.description{
+
+    margin-top:30px;
+    font-size:1.1rem;
+    max-width:700px;
+    margin-left:auto;
+    margin-right:auto;
+
+}
+
+
+.features{
+
+    padding:60px 0;
+}
+
+.features h2{
+
+    margin-bottom:20px;
+    color:#0d47a1;
+
+}
+
+.features ul{
+
+    list-style:none;
+}
+
+.features li{
+
+    margin:10px 0;
+    font-size:1.1rem;
+
+}
+
+
+.footer{
+
+    margin-top:40px;
+    background:#0d47a1;
+    color:white;
+    padding:15px;
+
+}
