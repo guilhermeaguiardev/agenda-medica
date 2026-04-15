@@ -18,10 +18,29 @@ body{
 
 }
 
+.btn-entrar {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 25px;
+    background-color: #1e88e5;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: 0.3s;
+}
 
+.btn-entrar:hover {
+    background-color: #1565c0;
+}
+
+.btn-container {
+    margin-top: 20px;
+    text-align: center;
+}
 /* CONTAINER */
 
-.container{
+.custom-container{
 
     width:90%;
     max-width:1100px;
@@ -34,18 +53,16 @@ body{
 /* HEADER */
 
 .header{
-
     background:linear-gradient(90deg,#0d47a1,#1e88e5);
     color:white;
     padding:40px 0;
-
+    text-align: center;
 }
 
 .title{
-
     font-size:2.3rem;
     margin-bottom:10px;
-
+    margin-top: 10px;
 }
 
 .subtitle{
@@ -130,4 +147,52 @@ figcaption{
     color:white;
     padding:15px;
 
+}
+
+.form-container {
+    background: white;
+    max-width: 400px;
+    margin: 60px auto;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.form-container h2 {
+    margin-bottom: 20px;
+    color: #0d47a1;
+}
+
+.form-container input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.form-container button {
+    width: 100%;
+    padding: 12px;
+    background-color: #1e88e5;
+    color:  white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.form-container button:hover {
+    background-color: #1565c0;
+}
+
+.form-container a {
+    display: block;
+    margin-top: 15px;
+    color: #1e88e5;
+    text-decoration: none;
+}
+
+.form-container a:hover {
+    text-decoration: underline;
 }
