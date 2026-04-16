@@ -49,5 +49,37 @@
 
 </div>
 
+<script>
+document.getElementById("cadastroForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const nome = document.getElementById("nome").value;
+    const login = document.getElementById("login").value;
+    const senha = document.getElementById("senha").value;
+
+    try {
+        const resposta = await fetch("http://localhost:3000/cadastro", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ nome, login, senha })
+        });
+
+        const dados = await resposta.json();
+
+        if (resposta.ok) {
+            alert(dados.mensagem);
+        } else {
+            alert(dados.erro);
+        }
+
+        } catch (erro) {
+            alert("Erro ao conectar com o servidor");
+            console.log(erro);
+        }
+});
+</script>
+
 </body>
 </html>
