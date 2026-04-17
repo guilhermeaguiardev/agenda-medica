@@ -21,9 +21,9 @@ const db = mysql.createConnection({
 
 db.connect(err => {
     if (err) {
-        console.log('Erro ao conectar:', err);
+        console.log('ERRO BANCO:', err);
     } else {
-        console.log('Conectado ao banco!');
+        console.log('BANCO CONECTADO');
     }
 });
 
@@ -78,7 +78,7 @@ app.post('/login', (req, res) => {
             return res.status(500).json({ erro: 'Erro no servidor' });
         }
 
-        if (results.length === 0) {
+        if (!results || results.length === 0) {
             return res.status(401).json({ erro: 'Usuário não encontrado' });
         }
 
@@ -101,6 +101,11 @@ app.post('/login', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
+
+app.use((err, req, res, next) => {
+    console.error("ERRO GLOBAL:", err);
+    return res.status(500).json({ erro: err.message });
+});
 
 app.listen(PORT, () => {
     console.log('Servidor rodando na porta', PORT);
