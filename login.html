@@ -59,7 +59,8 @@
                 body: JSON.stringify({ login, senha })
             });
 
-            const dados = await resposta.json();
+            const texto = await resposta.text();
+            console.log("RESPOSTA:", texto);
 
             if (resposta.ok) {
                 alert(dados.mensagem);
