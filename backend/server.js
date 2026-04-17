@@ -48,7 +48,7 @@ app.post('/cadastro', (req, res) => {
             return res.status(400).json({ erro: 'Login já existe'});
         }
     
-    const sql = 'INSERT INTO usuarios (nome, login, senha, atualizado_em, atualizado_por) VALUES (?, ?, ?, NOW(), 1)';
+        const sql = 'INSERT INTO usuarios (nome, login, senha, atualizado_em, atualizado_por) VALUES (?, ?, ?, NOW(), 1)';
 
         db.query(sql, [nome, login, senha], (err, result) => {
 
