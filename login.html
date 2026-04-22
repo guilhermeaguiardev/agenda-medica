@@ -51,7 +51,7 @@
         const senha = document.getElementById("senha").value;
 
         try {
-            const resposta = await fetch("https://agenda-medica-yqox.onrender.com/login", {
+            const resposta = await fetch("https://agenda-medica-backend-qfss.onrender.com/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -59,9 +59,8 @@
                 body: JSON.stringify({ login, senha })
             });
 
-            const texto = await resposta.text();
-            console.log("RESPOSTA:", texto);
-
+            const dados =  await resposta.json();
+            
             if (resposta.ok) {
                 alert(dados.mensagem);
             } else {
