@@ -62,7 +62,9 @@
             const dados =  await resposta.json();
             
             if (resposta.ok) {
-                alert(dados.mensagem);
+                localStorage.setItem("usuario", JSON.stringify(dados.usuario));
+
+                window.location.href = "sistema.html";
             } else {
                 alert(dados.erro);
             }

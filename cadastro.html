@@ -70,6 +70,10 @@ document.getElementById("cadastroForm").addEventListener("submit", async functio
 
         if (resposta.ok) {
             alert(dados.mensagem);
+
+            setTimeout(() => {
+                window.location.href = "usuarios.html";
+            }, 1000);
         } else {
             alert(dados.erro);
         }

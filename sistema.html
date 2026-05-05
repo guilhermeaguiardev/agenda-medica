@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Sistema</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+<!-- MENU SUPERIOR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+
+        <a class="navbar-brand">Desenvolvimento de Aplicações Corporativas</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="menu">
+            <ul class="navbar-nav ms-auto">
+
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Início</a>
+                </li>
+
+                <!-- MENU CADASTROS -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                        Cadastros
+                    </a>
+
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item" href="#" onclick="carregarUsuarios()">
+                                Usuários
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- BOTÃO SAIR -->
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="logout()">
+                        Sair
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+
+    </div>
+</nav>
+
+<!-- CONTEÚDO -->
+<div class="container mt-5" id="conteudo">
+    <h2>Bem-vindo ao sistema</h2>
+    <p id="nomeUsuario"></p>
+</div>
+
+<!-- SCRIPT -->
+<script>
+
+     const usuario = localStorage.getItem("usuario");
+
+    if (!usuario) {
+        window.location.href = "login.html";
+    }
+
+    const dadosUsuario = JSON.parse(usuario);
+    document.getElementById("nomeUsuario").innerText =
+        "Usuário: " + dadosUsuario.nome;
+        
+    async function carregarUsuarios() {
+
+    const resposta = await fetch("https://agenda-medica-backend-qfss.onrender.com/usuarios");
+    const dados = await resposta.json();
+
+    let html = `
+        <h2>Usuários - Listar</h2>
+
+        <button class="btn btn-primary mb-3" onclick="abrirCadastro()">
+            Incluir
+        </button>
+
+        <table class="table table-bordered">
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Login</th>
+            </tr>
+    `;
+
+    dados.forEach(u => {
+        html += `
+            <tr>
+                <td>${u.id}</td>
+                <td>${u.nome}</td>
+                <td>${u.login}</td>
+            </tr>
+        `;
+    });
+
+    html += "</table>";
+
+    document.getElementById("conteudo").innerHTML = html;
+}
+
+function abrirCadastro() {
+    document.getElementById("conteudo").innerHTML = `
+        <h2>Cadastrar Usuário</h2>
+
+        <input id="nome" class="form-control mb-2" placeholder="Nome">
+        <input id="login" class="form-control mb-2" placeholder="Login">
+        <input id="senha" type="password" class="form-control mb-2" placeholder="Senha">
+
+        <button class="btn btn-success" onclick="salvarUsuario()">Salvar</button>
+        <button class="btn btn-secondary" onclick="carregarUsuarios()">Voltar</button>
+    `;
+}
+
+async function salvarUsuario() {
+
+    const nome = document.getElementById("nome").value;
+    const login = document.getElementById("login").value;
+    const senha = document.getElementById("senha").value;
+
+    const resposta = await fetch("https://agenda-medica-backend-qfss.onrender.com/cadastro", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ nome, login, senha })
+    });
+
+    const dados = await resposta.json();
+
+    alert(dados.mensagem || dados.erro);
+
+    carregarUsuarios();
+}
+
+function logout() {
+    localStorage.removeItem("usuario");
+    window.location.href = "login.html";
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
