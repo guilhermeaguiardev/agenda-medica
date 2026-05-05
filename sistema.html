@@ -9,7 +9,6 @@
 
 <body>
 
-<!-- MENU SUPERIOR -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">
 
@@ -26,7 +25,6 @@
                     <a class="nav-link" href="#">Início</a>
                 </li>
 
-                <!-- MENU CADASTROS -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
                         Cadastros
@@ -41,7 +39,6 @@
                     </ul>
                 </li>
 
-                <!-- BOTÃO SAIR -->
                 <li class="nav-item">
                     <a class="nav-link" href="#" onclick="logout()">
                         Sair
@@ -54,13 +51,11 @@
     </div>
 </nav>
 
-<!-- CONTEÚDO -->
 <div class="container mt-5" id="conteudo">
     <h2>Bem-vindo ao sistema</h2>
     <p id="nomeUsuario"></p>
 </div>
 
-<!-- SCRIPT -->
 <script>
 
      const usuario = localStorage.getItem("usuario");
@@ -72,7 +67,7 @@
     const dadosUsuario = JSON.parse(usuario);
     document.getElementById("nomeUsuario").innerText =
         "Usuário: " + dadosUsuario.nome;
-        
+
     async function carregarUsuarios() {
 
     const resposta = await fetch("https://agenda-medica-backend-qfss.onrender.com/usuarios");
