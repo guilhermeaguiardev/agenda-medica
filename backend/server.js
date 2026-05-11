@@ -100,6 +100,107 @@ app.post('/login', (req, res) => {
 
 });
 
+app.get('/usuarios', (req, res) => {
+
+    const sql = 'SELECT id, nome, login FROM usuarios';
+
+    db.query(sql, (err, results) => {
+
+        if (err) {
+            return res.status(500).json({ erro: 'Erro ao buscar usuários' });
+        }
+
+        res.json(results);
+
+    });
+
+});
+
+// =========================
+// BUSCAR POR ID
+// =========================
+app.get('/usuarios/:id', (req, res) => {
+
+    const { id } = req.params;
+
+    const sql = 'SELECT id, nome, login FROM usuarios WHERE id = ?';
+
+    db.query(sql, [id], (err, results) => {
+
+        if (err) {
+            return res.status(500).json({ erro: 'Erro ao buscar usuário' });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ erro: 'Usuário não encontrado' });
+        }
+
+        res.json(results[0]);
+
+    });
+
+});
+
+// =========================
+//  ATUALIZAR
+// =========================
+app.put('/usuarios/:id', (req, res) => {
+
+    const { id } = req.params;
+    const { nome, login, senha } = req.body;
+
+    let sql;
+    let params;
+
+    if (senha) {
+        sql = `
+            UPDATE usuarios 
+            SET nome = ?, login = ?, senha = ?, atualizado_em = NOW(), atualizado_por = 1 
+            WHERE id = ?
+        `;
+        params = [nome, login, senha, id];
+    } else {
+        sql = `
+            UPDATE usuarios 
+            SET nome = ?, login = ?, atualizado_em = NOW(), atualizado_por = 1 
+            WHERE id = ?
+        `;
+        params = [nome, login, id];
+    }
+
+    db.query(sql, params, (err) => {
+
+        if (err) {
+            return res.status(500).json({ erro: 'Erro ao atualizar usuário' });
+        }
+
+        res.json({ mensagem: 'Usuário atualizado com sucesso!' });
+
+    });
+
+});
+
+// =========================
+// EXCLUIR
+// =========================
+app.delete('/usuarios/:id', (req, res) => {
+
+    const { id } = req.params;
+
+    const sql = 'DELETE FROM usuarios WHERE id = ?';
+
+    db.query(sql, [id], (err) => {
+
+        if (err) {
+            return res.status(500).json({ erro: 'Erro ao excluir usuário' });
+        }
+
+        res.json({ mensagem: 'Usuário excluído com sucesso!' });
+
+    });
+
+});
+
 const PORT = process.env.PORT || 3000;
 
 app.use((err, req, res, next) => {

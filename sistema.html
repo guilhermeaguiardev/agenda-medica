@@ -25,20 +25,28 @@
                     <a class="nav-link" href="#">Início</a>
                 </li>
 
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                        Cadastros
-                    </a>
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+        Cadastros
+    </a>
 
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a class="dropdown-item" href="#" onclick="carregarUsuarios()">
-                                Usuários
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
+    <ul class="dropdown-menu">
+    <li>
+        <a class="dropdown-item" href="#" onclick="menuColaboradores()">
+            Colaboradores
+        </a>
+    </li>
+    <li>
+        <a class="dropdown-item" href="#">
+            Pacientes
+        </a>
+    </li>
+    <li>
+        <a class="dropdown-item" href="#">
+            Médicos
+        </a>
+    </li>
+</ul>
                 <li class="nav-item">
                     <a class="nav-link" href="#" onclick="logout()">
                         Sair
@@ -58,30 +66,44 @@
 
 <script>
 
-     const usuario = localStorage.getItem("usuario");
+const usuario = localStorage.getItem("usuario");
 
-    if (!usuario) {
-        window.location.href = "login.html";
-    }
+if (!usuario) {
+    window.location.href = "login.html";
+}
 
-    const dadosUsuario = JSON.parse(usuario);
-    document.getElementById("nomeUsuario").innerText =
-        "Usuário: " + dadosUsuario.nome;
+const dadosUsuario = JSON.parse(usuario);
+document.getElementById("nomeUsuario").innerText =
+    "Usuário: " + dadosUsuario.nome;
 
-    async function carregarUsuarios() {
+
+// MENU COLABORADORES
+function menuColaboradores() {
+    document.getElementById("conteudo").innerHTML = `
+        <h2>Colaboradores</h2>
+
+        <div class="mb-3">
+            <button class="btn btn-success" onclick="abrirCadastro()">Incluir</button>
+            <button class="btn btn-warning" onclick="editarUsuario()">Editar</button>
+            <button class="btn btn-primary" onclick="listarUsuarios()">Listar</button>
+            <button class="btn btn-danger" onclick="excluirUsuario()">Excluir</button>
+        </div>
+
+        <div id="areaTrabalho"></div>
+    `;
+}
+
+
+// LISTAR
+async function listarUsuarios() {
 
     const resposta = await fetch("https://agenda-medica-backend-qfss.onrender.com/usuarios");
     const dados = await resposta.json();
 
     let html = `
-        <h2>Usuários - Listar</h2>
-
-        <button class="btn btn-primary mb-3" onclick="abrirCadastro()">
-            Incluir
-        </button>
-
         <table class="table table-bordered">
             <tr>
+                <th></th>
                 <th>ID</th>
                 <th>Nome</th>
                 <th>Login</th>
@@ -91,6 +113,7 @@
     dados.forEach(u => {
         html += `
             <tr>
+                <td><input type="radio" name="usuario" value="${u.id}"></td>
                 <td>${u.id}</td>
                 <td>${u.nome}</td>
                 <td>${u.login}</td>
@@ -100,22 +123,25 @@
 
     html += "</table>";
 
-    document.getElementById("conteudo").innerHTML = html;
+    document.getElementById("areaTrabalho").innerHTML = html;
 }
 
+
+// CADASTRO
 function abrirCadastro() {
-    document.getElementById("conteudo").innerHTML = `
-        <h2>Cadastrar Usuário</h2>
+    document.getElementById("areaTrabalho").innerHTML = `
+        <h4>Novo Colaborador</h4>
 
         <input id="nome" class="form-control mb-2" placeholder="Nome">
         <input id="login" class="form-control mb-2" placeholder="Login">
         <input id="senha" type="password" class="form-control mb-2" placeholder="Senha">
 
         <button class="btn btn-success" onclick="salvarUsuario()">Salvar</button>
-        <button class="btn btn-secondary" onclick="carregarUsuarios()">Voltar</button>
+        <button class="btn btn-secondary" onclick="listarUsuarios()">Voltar</button>
     `;
 }
 
+// SALVAR
 async function salvarUsuario() {
 
     const nome = document.getElementById("nome").value;
@@ -134,13 +160,93 @@ async function salvarUsuario() {
 
     alert(dados.mensagem || dados.erro);
 
-    carregarUsuarios();
+    listarUsuarios();
 }
 
+
+// PEGAR SELECIONADO
+function getSelecionado() {
+    const selecionado = document.querySelector('input[name="usuario"]:checked');
+    return selecionado ? selecionado.value : null;
+}
+
+
+// EXCLUIR
+async function excluirUsuario() {
+
+    const id = getSelecionado();
+
+    if (!id) {
+        alert("Selecione um usuário");
+        return;
+    }
+
+    if (!confirm("Deseja excluir?")) return;
+
+    await fetch(`https://agenda-medica-backend-qfss.onrender.com/usuarios/${id}`, {
+        method: "DELETE"
+    });
+
+    listarUsuarios();
+}
+
+
+// EDITAR (BASE)
+
+async function editarUsuario() {
+
+    const id = getSelecionado();
+
+    if (!id) {
+        alert("Selecione um usuário");
+        return;
+    }
+
+    // Buscar dados do usuário
+    const resposta = await fetch(`https://agenda-medica-backend-qfss.onrender.com/usuarios/${id}`);
+    const u = await resposta.json();
+
+    // Mostrar formulário preenchido
+    document.getElementById("areaTrabalho").innerHTML = `
+        <h4>Editar Colaborador</h4>
+
+        <input id="nome" class="form-control mb-2" value="${u.nome}">
+        <input id="login" class="form-control mb-2" value="${u.login}">
+        <input id="senha" type="password" class="form-control mb-2" placeholder="Nova senha">
+
+        <button class="btn btn-success" onclick="atualizarUsuario(${u.id})">Salvar</button>
+        <button class="btn btn-secondary" onclick="listarUsuarios()">Voltar</button>
+    `;
+}
+
+async function atualizarUsuario(id) {
+
+    const nome = document.getElementById("nome").value;
+    const login = document.getElementById("login").value;
+    const senha = document.getElementById("senha").value;
+
+    const resposta = await fetch(`https://agenda-medica-backend-qfss.onrender.com/usuarios/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ nome, login, senha })
+    });
+
+    const dados = await resposta.json();
+
+    alert(dados.mensagem || dados.erro);
+
+    listarUsuarios();
+}
+
+
+// LOGOUT
 function logout() {
     localStorage.removeItem("usuario");
     window.location.href = "login.html";
 }
+
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
