@@ -102,7 +102,7 @@ app.post('/login', (req, res) => {
 
 app.get('/usuarios', (req, res) => {
 
-    const sql = 'SELECT id, nome, login FROM usuarios';
+    const sql = 'SELECT usuario_id AS id, nome, login FROM usuarios';
 
     db.query(sql, (err, results) => {
 
@@ -123,7 +123,7 @@ app.get('/usuarios/:id', (req, res) => {
 
     const { id } = req.params;
 
-    const sql = 'SELECT id, nome, login FROM usuarios WHERE id = ?';
+    const sql = 'SELECT usuario_id AS id, nome, login FROM usuarios WHERE usuario_id = ?';
 
     db.query(sql, [id], (err, results) => {
 
@@ -156,14 +156,14 @@ app.put('/usuarios/:id', (req, res) => {
         sql = `
             UPDATE usuarios 
             SET nome = ?, login = ?, senha = ?, atualizado_em = NOW(), atualizado_por = 1 
-            WHERE id = ?
+            WHERE usuario_id = ?
         `;
         params = [nome, login, senha, id];
     } else {
         sql = `
             UPDATE usuarios 
             SET nome = ?, login = ?, atualizado_em = NOW(), atualizado_por = 1 
-            WHERE id = ?
+            WHERE usuario_id = ?
         `;
         params = [nome, login, id];
     }
@@ -187,7 +187,7 @@ app.delete('/usuarios/:id', (req, res) => {
 
     const { id } = req.params;
 
-    const sql = 'DELETE FROM usuarios WHERE id = ?';
+    const sql = 'DELETE FROM usuarios WHERE usuario_id = ?';
 
     db.query(sql, [id], (err) => {
 
