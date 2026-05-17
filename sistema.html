@@ -5,6 +5,33 @@
     <title>Sistema</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+.table-hover tbody tr:hover {
+    background-color: #f5f7fa;
+    cursor: pointer;
+}
+
+.linha-selecionada {
+    background-color: #e7f1ff !important;
+}
+
+.table thead {
+    background-color: #0d6efd;
+    color: white;
+}
+.table td:first-child,
+.table th:first-child {
+    text-align: center;
+    vertical-align: middle;
+    width: 50px;
+}
+
+td input[type="radio"] {
+    transform: scale(1.2);
+    cursor: pointer;
+}
+    </style>
 </head>
 
 <body>
@@ -80,19 +107,42 @@ document.getElementById("nomeUsuario").innerText =
 // MENU COLABORADORES
 function menuColaboradores() {
     document.getElementById("conteudo").innerHTML = `
-        <h2>Colaboradores</h2>
+        <div class="card shadow-sm">
 
-        <div class="mb-3">
-            <button class="btn btn-success" onclick="abrirCadastro()">Incluir</button>
-            <button class="btn btn-warning" onclick="editarUsuario()">Editar</button>
-            <button class="btn btn-primary" onclick="listarUsuarios()">Listar</button>
-            <button class="btn btn-danger" onclick="excluirUsuario()">Excluir</button>
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Colaboradores</h5>
+
+                <button class="btn btn-success btn-sm" onclick="abrirCadastro()">
+                    Novo
+                </button>
+            </div>
+
+            <div class="card-body">
+
+                <div class="mb-3 d-flex gap-2">
+
+                    <button class="btn btn-primary btn-sm" onclick="listarUsuarios()">
+                        Listar
+                    </button>
+
+                    <button class="btn btn-outline-warning btn-sm" onclick="editarUsuario()">
+                        Editar
+                    </button>
+
+                    <button class="btn btn-outline-danger btn-sm" onclick="excluirUsuario()">
+                        Excluir
+                    </button>
+
+                </div>
+
+                <div id="areaTrabalho"></div>
+
+            </div>
+
         </div>
-
-        <div id="areaTrabalho"></div>
     `;
-}
 
+}
 
 // LISTAR
 async function listarUsuarios() {
@@ -101,18 +151,21 @@ async function listarUsuarios() {
     const dados = await resposta.json();
 
     let html = `
-        <table class="table table-bordered">
+    <table class="table table-bordered table-hover">
+        <thead>
             <tr>
                 <th></th>
                 <th>ID</th>
                 <th>Nome</th>
                 <th>Login</th>
             </tr>
-    `;
+        </thead>
+        <tbody>
+`;
 
     dados.forEach(u => {
         html += `
-            <tr>
+            <tr onclick="selecionarLinha(this)">
                 <td><input type="radio" name="usuario" value="${u.id}"></td>
                 <td>${u.id}</td>
                 <td>${u.nome}</td>
@@ -121,26 +174,59 @@ async function listarUsuarios() {
         `;
     });
 
-    html += "</table>";
+    html += "</tbody></table>";
 
     document.getElementById("areaTrabalho").innerHTML = html;
+}
+
+
+function selecionarLinha(linha) {
+
+    document.querySelectorAll("tr").forEach(tr => {
+        tr.classList.remove("linha-selecionada");
+    });
+
+    linha.classList.add("linha-selecionada");
+
+    const radio = linha.querySelector("input[type='radio']");
+    if (radio) radio.checked = true;
 }
 
 
 // CADASTRO
 function abrirCadastro() {
     document.getElementById("areaTrabalho").innerHTML = `
-        <h4>Novo Colaborador</h4>
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                Novo Colaborador
+            </div>
 
-        <input id="nome" class="form-control mb-2" placeholder="Nome">
-        <input id="login" class="form-control mb-2" placeholder="Login">
-        <input id="senha" type="password" class="form-control mb-2" placeholder="Senha">
+            <div class="card-body">
 
-        <button class="btn btn-success" onclick="salvarUsuario()">Salvar</button>
-        <button class="btn btn-secondary" onclick="listarUsuarios()">Voltar</button>
+                <div class="mb-3">
+                    <label class="form-label">Nome</label>
+                    <input id="nome" class="form-control" placeholder="Digite o nome">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Login</label>
+                    <input id="login" class="form-control" placeholder="Digite o login">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Senha</label>
+                    <input id="senha" type="password" class="form-control" placeholder="Digite a senha">
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <button class="btn btn-secondary" onclick="listarUsuarios()">Cancelar</button>
+                    <button class="btn btn-success" onclick="salvarUsuario()">Salvar</button>
+                </div>
+
+            </div>
+        </div>
     `;
 }
-
 // SALVAR
 async function salvarUsuario() {
 
