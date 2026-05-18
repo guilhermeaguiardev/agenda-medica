@@ -615,6 +615,7 @@ async function listarMedicos() {
                 <th>ID</th>
                 <th>Nome</th>
                 <th>CPF</th>
+                <th>Nascimento</th>
                 <th>Telefone</th>
             </tr>
         </thead>
@@ -628,6 +629,7 @@ async function listarMedicos() {
                 <td>${m.id}</td>
                 <td>${m.nome}</td>
                 <td>${m.cpf}</td>
+                <td>${m.nascimento ? new Date(m.nascimento).toLocaleDateString() : ""}</td>
                 <td>${m.telefone}</td>
             </tr>
         `;
@@ -658,6 +660,11 @@ function abrirCadastroMedico() {
                 </div>
 
                 <div class="mb-3">
+                    <label>Nascimento</label>
+                    <input id="nascimento" type="date" class="form-control">   
+                </div>
+
+                <div class="mb-3">
                     <label>Telefone</label>
                     <input id="telefone" class="form-control">
                 </div>
@@ -676,7 +683,9 @@ async function salvarMedico() {
 
     const nome = document.getElementById("nome").value;
     const cpf = document.getElementById("cpf").value;
+    const nascimento = document.getElementById("nascimento").value;
     const telefone = document.getElementById("telefone").value;
+
 
     const resposta = await fetch("https://agenda-medica-backend-qfss.onrender.com/pessoas", {
         method: "POST",
@@ -686,6 +695,7 @@ async function salvarMedico() {
         body: JSON.stringify({
             nome,
             cpf,
+            nascimento,
             telefone,
             pessoa_tipo: "medico"
         })
@@ -717,6 +727,84 @@ async function excluirMedico() {
     await fetch(`https://agenda-medica-backend-qfss.onrender.com/pessoas/${id}`, {
         method: "DELETE"
     });
+
+    listarMedicos();
+}
+
+async function editarMedico() {
+
+    const id = getMedicoSelecionado();
+
+    if (!id) {
+        alert("Selecione um médico");
+        return;
+    }
+
+    const resposta = await fetch(`https://agenda-medica-backend-qfss.onrender.com/pessoas/${id}`);
+    const m = await resposta.json();
+
+    document.getElementById("areaTrabalho").innerHTML = `
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning">
+                Editar Médico
+            </div>
+
+            <div class="card-body">
+
+                <div class="mb-3">
+                    <label>Nome</label>
+                    <input id="nome" class="form-control" value="${m.nome}">
+                </div>
+
+                <div class="mb-3">
+                    <label>CPF</label>
+                    <input id="cpf" class="form-control" value="${m.cpf}">
+                </div>
+
+                <div class="mb-3">
+                    <label>Nascimento</label>
+                    <input id="nascimento" type="date" class="form-control" value="${m.nascimento ? m.nascimento.split('T')[0] : ""}">
+                </div>
+
+                <div class="mb-3">
+                    <label>Telefone</label>
+                    <input id="telefone" class="form-control" value="${m.telefone}">
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <button class="btn btn-secondary" onclick="listarMedicos()">Cancelar</button>
+                    <button class="btn btn-warning" onclick="atualizarMedico(${m.id})">Salvar</button>
+                </div>
+
+            </div>
+        </div>
+    `;
+}
+
+async function atualizarMedico(id) {
+
+    const nome = document.getElementById("nome").value;
+    const cpf = document.getElementById("cpf").value;
+    const nascimento = document.getElementById("nascimento").value;
+    const telefone = document.getElementById("telefone").value;
+
+    const resposta = await fetch(`https://agenda-medica-backend-qfss.onrender.com/pessoas/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            nome,
+            cpf,
+            nascimento,
+            telefone,
+            pessoa_tipo: "medico" 
+        })
+    });
+
+    const dados = await resposta.json();
+
+    alert(dados.mensagem || dados.erro);
 
     listarMedicos();
 }

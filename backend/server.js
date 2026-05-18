@@ -330,6 +330,140 @@ app.delete('/clientes/:id', (req, res) => {
 
 });
 
+
+// =========================
+// LISTAR MEDICOS
+// =========================
+app.get('/medicos/:id', (req, res) => {
+
+    const { id } = req.params;
+
+    const sql = `
+        SELECT pessoa_id AS id, nome, cpf, nascimento, telefone
+        FROM pessoas
+        WHERE pessoa_id = ? AND pessoa_tipo = 'medico'
+    `;
+
+    db.query(sql, [id], (err, results) => {
+
+        if (err) {
+            return res.status(500).json({ erro: 'Erro ao buscar médico' });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ erro: 'Médico não encontrado' });
+        }
+
+        res.json(results[0]);
+
+    });
+
+});
+
+// =========================
+// BUSCAR MEDICO POR ID
+// =========================
+app.get('/medicos/:id', (req, res) => {
+
+    const { id } = req.params;
+
+    const sql = `
+        SELECT pessoa_id AS id, nome, cpf, nascimento, telefone
+        FROM pessoas
+        WHERE pessoa_id = ? AND pessoa_tipo = 'medico'
+    `;
+
+    db.query(sql, [id], (err, results) => {
+
+        if (err) {
+            return res.status(500).json({ erro: 'Erro ao buscar médico' });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ erro: 'Médico não encontrado' });
+        }
+
+        res.json(results[0]);
+
+    });
+
+});
+
+// =========================
+// CADASTRAR MEDICO
+// =========================
+app.post('/medicos', (req, res) => {
+
+    const { nome, cpf, nascimento, telefone } = req.body;
+
+    const sql = `
+        INSERT INTO pessoas (nome, cpf, nascimento, telefone, pessoa_tipo)
+        VALUES (?, ?, ?, ?, 'medico')
+    `;
+
+    db.query(sql, [nome, cpf, nascimento, telefone], (err) => {
+
+        if (err) {
+            return res.status(500).json({ erro: 'Erro ao cadastrar médico' });
+        }
+
+        res.json({ mensagem: 'Médico cadastrado com sucesso!' });
+
+    });
+
+});
+
+// =========================
+// ATUALIZAR MEDICO
+// =========================
+app.put('/medicos/:id', (req, res) => {
+
+    const { id } = req.params;
+    const { nome, cpf, nascimento, telefone } = req.body;
+
+    const sql = `
+        UPDATE pessoas
+        SET nome = ?, cpf = ?, nascimento = ?, telefone = ?
+        WHERE pessoa_id = ? AND pessoa_tipo = 'medico'
+    `;
+
+    db.query(sql, [nome, cpf, nascimento, telefone, id], (err) => {
+
+        if (err) {
+            return res.status(500).json({ erro: 'Erro ao atualizar médico' });
+        }
+
+        res.json({ mensagem: 'Médico atualizado com sucesso!' });
+
+    });
+
+});
+
+// =========================
+// EXCLUIR MEDICO
+// =========================
+app.delete('/medicos/:id', (req, res) => {
+
+    const { id } = req.params;
+
+    const sql = `
+        DELETE FROM pessoas
+        WHERE pessoa_id = ? AND pessoa_tipo = 'medico'
+    `;
+
+    db.query(sql, [id], (err) => {
+
+        if (err) {
+            return res.status(500).json({ erro: 'Erro ao excluir médico' });
+        }
+
+        res.json({ mensagem: 'Médico excluído com sucesso!' });
+
+    });
+
+});
+
+
 const PORT = process.env.PORT || 3000;
 
 app.use((err, req, res, next) => {
