@@ -69,8 +69,8 @@ td input[type="radio"] {
         </a>
     </li>
     <li>
-        <a class="dropdown-item" href="#">
-            Médicos
+        <a class="dropdown-item" href="#" onclick="menuMedicos()">
+        Médicos
         </a>
     </li>
 </ul>
@@ -169,6 +169,44 @@ function menuClientes() {
                     </button>
 
                     <button class="btn btn-outline-danger btn-sm" onclick="excluirCliente()">
+                        Excluir
+                    </button>
+
+                </div>
+
+                <div id="areaTrabalho"></div>
+
+            </div>
+
+        </div>
+    `;
+}
+
+function menuMedicos() {
+    document.getElementById("conteudo").innerHTML = `
+        <div class="card shadow-sm">
+
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Médicos</h5>
+
+                <button class="btn btn-success btn-sm" onclick="abrirCadastroMedico()">
+                    Novo
+                </button>
+            </div>
+
+            <div class="card-body">
+
+                <div class="mb-3 d-flex gap-2">
+
+                    <button class="btn btn-primary btn-sm" onclick="listarMedicos()">
+                        Listar
+                    </button>
+
+                    <button class="btn btn-outline-warning btn-sm" onclick="editarMedico()">
+                        Editar
+                    </button>
+
+                    <button class="btn btn-outline-danger btn-sm" onclick="excluirMedico()">
                         Excluir
                     </button>
 
@@ -564,6 +602,124 @@ async function salvarCliente() {
     listarClientes();
 }
 
+async function listarMedicos() {
+
+    const resposta = await fetch("https://agenda-medica-backend-qfss.onrender.com/pessoas?tipo=medico");
+    const dados = await resposta.json();
+
+    let html = `
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th></th>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>CPF</th>
+                <th>Telefone</th>
+            </tr>
+        </thead>
+        <tbody>
+    `;
+
+    dados.forEach(m => {
+        html += `
+            <tr onclick="selecionarLinha(this)">
+                <td><input type="radio" name="medico" value="${m.id}"></td>
+                <td>${m.id}</td>
+                <td>${m.nome}</td>
+                <td>${m.cpf}</td>
+                <td>${m.telefone}</td>
+            </tr>
+        `;
+    });
+
+    html += "</tbody></table>";
+
+    document.getElementById("areaTrabalho").innerHTML = html;
+}
+
+function abrirCadastroMedico() {
+    document.getElementById("areaTrabalho").innerHTML = `
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                Novo Médico
+            </div>
+
+            <div class="card-body">
+
+                <div class="mb-3">
+                    <label>Nome</label>
+                    <input id="nome" class="form-control">
+                </div>
+
+                <div class="mb-3">
+                    <label>CPF</label>
+                    <input id="cpf" class="form-control">
+                </div>
+
+                <div class="mb-3">
+                    <label>Telefone</label>
+                    <input id="telefone" class="form-control">
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <button class="btn btn-secondary" onclick="listarMedicos()">Cancelar</button>
+                    <button class="btn btn-success" onclick="salvarMedico()">Salvar</button>
+                </div>
+
+            </div>
+        </div>
+    `;
+}
+
+async function salvarMedico() {
+
+    const nome = document.getElementById("nome").value;
+    const cpf = document.getElementById("cpf").value;
+    const telefone = document.getElementById("telefone").value;
+
+    const resposta = await fetch("https://agenda-medica-backend-qfss.onrender.com/pessoas", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            nome,
+            cpf,
+            telefone,
+            pessoa_tipo: "medico"
+        })
+    });
+
+    const dados = await resposta.json();
+
+    alert(dados.mensagem || dados.erro);
+
+    listarMedicos();
+}
+
+function getMedicoSelecionado() {
+    const selecionado = document.querySelector('input[name="medico"]:checked');
+    return selecionado ? selecionado.value : null;
+}
+
+async function excluirMedico() {
+
+    const id = getMedicoSelecionado();
+
+    if (!id) {
+        alert("Selecione um médico");
+        return;
+    }
+
+    if (!confirm("Deseja excluir?")) return;
+
+    await fetch(`https://agenda-medica-backend-qfss.onrender.com/pessoas/${id}`, {
+        method: "DELETE"
+    });
+
+    listarMedicos();
+}
 
 // LOGOUT
 function logout() {
