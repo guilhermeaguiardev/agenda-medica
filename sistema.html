@@ -604,7 +604,7 @@ async function salvarCliente() {
 
 async function listarMedicos() {
 
-    const resposta = await fetch("https://agenda-medica-backend-qfss.onrender.com/pessoas?tipo=medico");
+    const resposta = await fetch("https://agenda-medica-backend-qfss.onrender.com/medicos");
     const dados = await resposta.json();
 
     let html = `
@@ -687,7 +687,7 @@ async function salvarMedico() {
     const telefone = document.getElementById("telefone").value;
 
 
-    const resposta = await fetch("https://agenda-medica-backend-qfss.onrender.com/pessoas", {
+    const resposta = await fetch("https://agenda-medica-backend-qfss.onrender.com/medicos", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -697,6 +697,7 @@ async function salvarMedico() {
             cpf,
             nascimento,
             telefone,
+            pessoa_tipo: "medico"
         })
     });
 
@@ -723,7 +724,7 @@ async function excluirMedico() {
 
     if (!confirm("Deseja excluir?")) return;
 
-    await fetch(`https://agenda-medica-backend-qfss.onrender.com/pessoas/${id}`, {
+    await fetch(`https://agenda-medica-backend-qfss.onrender.com/medicos/${id}`, {
         method: "DELETE"
     });
 
@@ -739,7 +740,7 @@ async function editarMedico() {
         return;
     }
 
-    const resposta = await fetch(`https://agenda-medica-backend-qfss.onrender.com/pessoas/${id}`);
+    const resposta = await fetch(`https://agenda-medica-backend-qfss.onrender.com/medicos/${id}`);
     const m = await resposta.json();
 
     document.getElementById("areaTrabalho").innerHTML = `
@@ -787,7 +788,7 @@ async function atualizarMedico(id) {
     const nascimento = document.getElementById("nascimento").value;
     const telefone = document.getElementById("telefone").value;
 
-    const resposta = await fetch(`https://agenda-medica-backend-qfss.onrender.com/pessoas/${id}`, {
+    const resposta = await fetch(`https://agenda-medica-backend-qfss.onrender.com/medicos/${id}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json"
@@ -797,6 +798,7 @@ async function atualizarMedico(id) {
             cpf,
             nascimento,
             telefone,
+            pessoa_tipo: "medico" 
         })
     });
 
