@@ -64,8 +64,8 @@ td input[type="radio"] {
         </a>
     </li>
     <li>
-        <a class="dropdown-item" href="#">
-            Pacientes
+        <a class="dropdown-item" href="#" onclick="menuClientes()">
+        Clientes
         </a>
     </li>
     <li>
@@ -144,6 +144,44 @@ function menuColaboradores() {
 
 }
 
+function menuClientes() {
+    document.getElementById("conteudo").innerHTML = `
+        <div class="card shadow-sm">
+
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Clientes</h5>
+
+                <button class="btn btn-success btn-sm" onclick="abrirCadastroCliente()">
+                    Novo
+                </button>
+            </div>
+
+            <div class="card-body">
+
+                <div class="mb-3 d-flex gap-2">
+
+                    <button class="btn btn-primary btn-sm" onclick="listarClientes()">
+                        Listar
+                    </button>
+
+                    <button class="btn btn-outline-warning btn-sm" onclick="editarCliente()">
+                        Editar
+                    </button>
+
+                    <button class="btn btn-outline-danger btn-sm" onclick="excluirCliente()">
+                        Excluir
+                    </button>
+
+                </div>
+
+                <div id="areaTrabalho"></div>
+
+            </div>
+
+        </div>
+    `;
+}
+
 // LISTAR
 async function listarUsuarios() {
 
@@ -182,7 +220,7 @@ async function listarUsuarios() {
 
 function selecionarLinha(linha) {
 
-    document.querySelectorAll("tr").forEach(tr => {
+    document.querySelectorAll("#areaTrabalho tbody tr").forEach(tr => {
         tr.classList.remove("linha-selecionada");
     });
 
@@ -227,6 +265,7 @@ function abrirCadastro() {
         </div>
     `;
 }
+
 // SALVAR
 async function salvarUsuario() {
 
@@ -324,6 +363,205 @@ async function atualizarUsuario(id) {
     alert(dados.mensagem || dados.erro);
 
     listarUsuarios();
+}
+
+async function listarClientes() {
+
+    const resposta = await fetch("https://agenda-medica-backend-qfss.onrender.com/clientes");
+    const dados = await resposta.json();
+
+    let html = `
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th></th>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>CPF</th>
+                <th>Nascimento</th>
+                <th>Telefone</th>
+            </tr>
+        </thead>
+        <tbody>
+    `;
+
+    dados.forEach(c => {
+        html += `
+            <tr onclick="selecionarLinha(this)">
+                <td><input type="radio" name="cliente" value="${c.id}"></td>
+                <td>${c.id}</td>
+                <td>${c.nome}</td>
+                <td>${c.cpf}</td>
+                <td>${c.nascimento ? new Date(c.nascimento).toLocaleDateString() : ""}</td>
+                <td>${c.telefone}</td>
+            </tr>
+        `;
+    });
+
+    html += "</tbody></table>";
+
+    document.getElementById("areaTrabalho").innerHTML = html;
+}
+
+function abrirCadastroCliente() {
+    document.getElementById("areaTrabalho").innerHTML = `
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                Novo Cliente
+            </div>
+
+            <div class="card-body">
+
+                <div class="mb-3">
+                    <label>Nome</label>
+                    <input id="nome" class="form-control">
+                </div>
+
+                <div class="mb-3">
+                    <label>CPF</label>
+                    <input id="cpf" class="form-control">
+                </div>
+
+                <div class="mb-3">
+                    <label>Nascimento</label>
+                    <input id="nascimento" type="date" class="form-control">
+                </div>
+
+                <div class="mb-3">
+                    <label>Telefone</label>
+                    <input id="telefone" class="form-control">
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <button class="btn btn-secondary" onclick="listarClientes()">Cancelar</button>
+                    <button class="btn btn-success" onclick="salvarCliente()">Salvar</button>
+                </div>
+
+            </div>
+        </div>
+    `;
+}
+
+function getClienteSelecionado() {
+    const selecionado = document.querySelector('input[name="cliente"]:checked');
+    return selecionado ? selecionado.value : null;
+}
+
+async function excluirCliente() {
+
+    const id = getClienteSelecionado();
+
+    if (!id) {
+        alert("Selecione um cliente");
+        return;
+    }
+
+    if (!confirm("Deseja excluir?")) return;
+
+    await fetch(`https://agenda-medica-backend-qfss.onrender.com/clientes/${id}`, {
+        method: "DELETE"
+    });
+
+    listarClientes();
+}
+
+async function editarCliente() {
+
+    const id = getClienteSelecionado();
+
+    if (!id) {
+        alert("Selecione um cliente");
+        return;
+    }
+
+    const resposta = await fetch(`https://agenda-medica-backend-qfss.onrender.com/clientes/${id}`);
+    const c = await resposta.json();
+
+    document.getElementById("areaTrabalho").innerHTML = `
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning">
+                Editar Cliente
+            </div>
+
+            <div class="card-body">
+
+                <div class="mb-3">
+                    <label>Nome</label>
+                    <input id="nome" class="form-control" value="${c.nome}">
+                </div>
+
+                <div class="mb-3">
+                    <label>CPF</label>
+                    <input id="cpf" class="form-control" value="${c.cpf}">
+                </div>
+
+                <div class="mb-3">
+                    <label>Nascimento</label>
+                    <input id="nascimento" type="date" class="form-control" value="${c.nascimento.split('T')[0]}">
+                </div>
+
+                <div class="mb-3">
+                    <label>Telefone</label>
+                    <input id="telefone" class="form-control" value="${c.telefone}">
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <button class="btn btn-secondary" onclick="listarClientes()">Cancelar</button>
+                    <button class="btn btn-warning" onclick="atualizarCliente(${c.id})">Salvar</button>
+                </div>
+
+            </div>
+        </div>
+    `;
+}
+
+async function atualizarCliente(id) {
+
+    const nome = document.getElementById("nome").value;
+    const cpf = document.getElementById("cpf").value;
+    const nascimento = document.getElementById("nascimento").value;
+    const telefone = document.getElementById("telefone").value;
+
+    const resposta = await fetch(`https://agenda-medica-backend-qfss.onrender.com/clientes/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ nome, cpf, nascimento, telefone })
+    });
+
+    const dados = await resposta.json();
+
+    alert(dados.mensagem || dados.erro);
+
+    listarClientes();
+}
+
+async function salvarCliente() {
+
+    const nome = document.getElementById("nome").value;
+    const cpf = document.getElementById("cpf").value;
+    const nascimento = document.getElementById("nascimento").value;
+    const telefone = document.getElementById("telefone").value;
+
+    const resposta = await fetch("https://agenda-medica-backend-qfss.onrender.com/clientes", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            nome,
+            cpf,
+            nascimento,
+            telefone,
+        })
+    });
+
+    const dados = await resposta.json();
+
+    alert(dados.mensagem || dados.erro);
+
+    listarClientes();
 }
 
 
