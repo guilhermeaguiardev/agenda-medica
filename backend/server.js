@@ -332,32 +332,25 @@ app.delete('/clientes/:id', (req, res) => {
 
 
 // =========================
-// LISTAR MEDICOS
+// LISTAR MÉDICOS (CORRETO)
 // =========================
-app.get('/medicos/:id', (req, res) => {
-
-    const { id } = req.params;
+app.get('/medicos', (req, res) => {
 
     const sql = `
         SELECT pessoa_id AS id, nome, cpf, nascimento, telefone
         FROM pessoas
-        WHERE pessoa_id = ? AND pessoa_tipo = 'medico'
+        WHERE pessoa_tipo = 'medico'
+        ORDER BY pessoa_id
     `;
 
-    db.query(sql, [id], (err, results) => {
+    db.query(sql, (err, results) => {
 
         if (err) {
-            return res.status(500).json({ erro: 'Erro ao buscar médico' });
+            return res.status(500).json({ erro: 'Erro ao buscar médicos' });
         }
 
-        if (results.length === 0) {
-            return res.status(404).json({ erro: 'Médico não encontrado' });
-        }
-
-        res.json(results[0]);
-
+        res.json(results);
     });
-
 });
 
 // =========================
